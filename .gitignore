@@ -1,0 +1,14 @@
+node_modules/
+
+cypress/videos/
+cypress/screenshots/
+cypress/downloads/
+
+mochawesome-report/
+reports/
+*.xml
+*.json
+
+.cache/
+
+cypress.env.json
