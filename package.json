@@ -1,0 +1,33 @@
+{
+  "name": "challengeat",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "cypress run",
+    "cypress:open": "cypress open",
+    "cypress:run": "cypress run",
+    "cypress:run:chrome": "cypress run --browser chrome",
+    "allure:generate": "allure generate ./allure-results --clean -o ./allure-report",
+    "allure:open": "allure open ./allure-report",
+    "allure:serve": "allure serve ./allure-results"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Peixooto/challengeAT.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/Peixooto/challengeAT/issues"
+  },
+  "homepage": "https://github.com/Peixooto/challengeAT#readme",
+  "devDependencies": {
+    "@shelex/cypress-allure-plugin": "^2.41.2",
+    "allure-commandline": "^2.43.0",
+    "cypress": "^16.0.0",
+    "prettier": "^3.9.6"
+  }
+}
