@@ -41,29 +41,27 @@ jobs:
           path: cypress/videos
           if-no-files-found: ignore
 
-      - name: Checkout previous report (keeps history/trend graphs)
-        uses: actions/checkout@v4
-        if: always()
-        continue-on-error: true
-        with:
-          ref: gh-pages
-          path: gh-pages
-
-      - name: Generate Allure report
-        uses: simple-elf/allure-report-action@master
-        if: always()
-        with:
-          allure_results: allure-results
-          allure_history: allure-history
-          gh_pages: gh-pages
-
+      # cypress-mochawesome-reporter already writes the final HTML report
+      # (with embedded screenshots) to cypress/reports/html during the run
+      # above - no separate "generate" step needed, just publish it.
       - name: Publish report to GitHub Pages
         if: always()
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_branch: gh-pages
-          publish_dir: allure-history
+          publish_dir: cypress/reports/html
+
+      - name: Add report link to run summary
+        if: always()
+        run: |
+          {
+            echo "## 📊 Test report"
+            echo ""
+            echo "[**Click here to view the full Mochawesome report**](https://peixooto.github.io/challengeAT/)"
+            echo ""
+            echo "_Might take a minute to update right after this run finishes._"
+          } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Fail job if tests failed
         if: steps.cypress.outcome == 'failure'
