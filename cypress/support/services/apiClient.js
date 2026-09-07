@@ -5,7 +5,7 @@ export function apiUrl(path = '') {
 export function apiRequest(options) {
   const { url, ...rest } = options;
 
-  return cy.request({
+  return cy.api({
     failOnStatusCode: false,
     ...rest,
     url: apiUrl(url),

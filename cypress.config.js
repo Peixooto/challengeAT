@@ -1,5 +1,4 @@
 const { defineConfig } = require("cypress");
-const allureWriter = require("@shelex/cypress-allure-plugin/writer");
 
 module.exports = defineConfig({
   retries: {
@@ -8,18 +7,23 @@ module.exports = defineConfig({
   },
   defaultCommandTimeout: 10000,
   defaultBrowser: 'chrome',
+  reporter: 'cypress-mochawesome-reporter',
+  reporterOptions: {
+    reportDir: 'cypress/reports/html',
+    reportPageTitle: 'ServeRest QA Report',
+    embeddedScreenshots: true,
+    inlineAssets: true,
+    charts: true,
+  },
   expose: {
     apiUrl: 'https://serverest.dev',
   },
   e2e: {
-    baseUrl: 'https://front.serverest.dev/login',
+    baseUrl: 'https://front.serverest.dev',
     viewportWidth: 1920,
     viewportHeight: 1080,
-    env: {
-      allure: true,
-    },
     setupNodeEvents(on, config) {
-      allureWriter(on, config);
+      require('cypress-mochawesome-reporter/plugin')(on);
       return config;
     },
   },

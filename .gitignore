@@ -5,12 +5,9 @@ cypress/screenshots/
 cypress/downloads/
 
 mochawesome-report/
+cypress/reports/
 reports/
 *.xml
-
-allure-results/
-allure-report/
-allure-history/
 
 .cache/
 
