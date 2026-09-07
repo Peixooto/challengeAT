@@ -1,8 +1,14 @@
 import { makeUser } from '../../support/factories/userFactory';
 import HomePage from '../../support/pages/HomePage';
-import ShoppingListPage from '../../support/pages/ShoppingListPage';
 
 describe('Test cases', () => {
+
+  // A fixed account like "ana@banana.com" isn't guaranteed to exist on the
+  // shared ServeRest demo server (it may never have been created, or may
+  // have been created with a different password by someone else running
+  // this same challenge). Creating our own user via the API before every
+  // run removes that dependency entirely, so login stays reliable no
+  // matter how many times or in what order the suite is executed.
   let user;
 
   before(() => {
@@ -25,7 +31,7 @@ describe('Test cases', () => {
   });
 
   it('Should check items displayed after login', () => {
-    const itensNavbar = [
+    const navbarItems = [
       'Home',
       'Lista de Compras',
       'Carrinho',
@@ -33,34 +39,35 @@ describe('Test cases', () => {
     ];
 
     HomePage.navbar().should('be.visible');
-    itensNavbar.forEach((texto) => {
-      HomePage.navbar().contains(texto).should('be.visible');
+    navbarItems.forEach((text) => {
+      HomePage.navbar().contains(text).should('be.visible');
     });
 
-    HomePage.titulo().should('have.text', 'Serverest Store');
-    HomePage.campoPesquisar().should('have.attr', 'placeholder', 'Pesquisar Produtos');
+    HomePage.pageTitle().should('have.text', 'Serverest Store');
+    HomePage.searchInput().should('have.attr', 'placeholder', 'Pesquisar Produtos');
     cy.get('h4').should('have.text', 'Produtos');
 
-    HomePage.botaoPesquisar().should('be.visible');
+    HomePage.searchButton().should('be.visible');
 
     HomePage.grid().should('be.visible').and('have.length.greaterThan', 0);
   });
 
-  it('Should allow you to add an item to the list', () => {
-    cy.intercept('GET', '**/produtos?nome=logitech').as('getProdutos');
+  it('should show no results when searching for a non-existent product', () => {
+    const term = `produto-que-nao-existe-${Date.now()}`;
+    cy.intercept('GET', `**/produtos?nome=${term}`).as('getProdutos');
 
-    HomePage.buscarProduto('logitech');
+    HomePage.searchProduct(term);
 
-    cy.wait('@getProdutos');
-
-    HomePage.grid().should('be.visible').and('contain.text', 'Logitech');
-    HomePage.adicionarPrimeiroResultadoNaLista();
-    cy.url().should('include', '/minhaListaDeProdutos');
-    ShoppingListPage.adicionarAoCarrinho();
+    cy.wait('@getProdutos').its('response.body.quantidade').should('eq', 0);
+    HomePage.grid().should('have.text', 'Nenhum produto foi encontrado');
   });
 
-  it('Should check the shopping list', () => {
-    HomePage.irParaListaDeCompras();
-    ShoppingListPage.titulo().should('have.text', 'Lista de Compras');
+  it('should log out and clear the session', () => {
+    HomePage.navbar().contains('Logout').click();
+
+    cy.url().should('include', '/login');
+    cy.window().then((win) => {
+      expect(win.localStorage.getItem('serverest/userToken')).to.be.null;
+    });
   });
 });

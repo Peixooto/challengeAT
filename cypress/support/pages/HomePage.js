@@ -8,15 +8,15 @@ class HomePage {
     return cy.get('#navbarTogglerDemo01');
   }
 
-  titulo() {
+  pageTitle() {
     return cy.get('h1');
   }
 
-  campoPesquisar() {
+  searchInput() {
     return cy.get('[data-testid="pesquisar"]');
   }
 
-  botaoPesquisar() {
+  searchButton() {
     return cy.get('[data-testid="botaoPesquisar"]');
   }
 
@@ -24,18 +24,18 @@ class HomePage {
     return cy.get('.row.espacamento');
   }
 
-  buscarProduto(nome) {
-    this.campoPesquisar().type(nome);
-    this.botaoPesquisar().scrollIntoView().should('be.visible').click();
+  searchProduct(name) {
+    this.searchInput().type(name);
+    this.searchButton().scrollIntoView().should('be.visible').click();
     return this;
   }
 
-  adicionarPrimeiroResultadoNaLista() {
+  addFirstResultToList() {
     cy.get('[data-testid="adicionarNaLista"]').should('be.visible').click();
     return this;
   }
 
-  irParaListaDeCompras() {
+  goToShoppingList() {
     cy.get('[data-testid="lista-de-compras"]').click();
     return this;
   }

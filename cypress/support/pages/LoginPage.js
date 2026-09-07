@@ -1,6 +1,6 @@
 class LoginPage {
   visit() {
-    cy.visit('/');
+    cy.visit('/login');
     return this;
   }
 
@@ -11,7 +11,7 @@ class LoginPage {
     return this;
   }
 
-  goToCadastro() {
+  goToSignup() {
     cy.get('[data-testid="cadastrar"]').should('be.visible').click();
     return this;
   }

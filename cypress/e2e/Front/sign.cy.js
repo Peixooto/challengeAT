@@ -1,6 +1,6 @@
 import { makeUser } from '../../support/factories/userFactory';
 import LoginPage from '../../support/pages/LoginPage';
-import CadastroPage from '../../support/pages/CadastroPage';
+import SignupPage from '../../support/pages/SignupPage';
 
 describe('Sign', () => {
     const user = makeUser();
@@ -8,9 +8,9 @@ describe('Sign', () => {
     it('should create a new login', () => {
         cy.intercept('POST', '**/usuarios').as('newUser');
 
-        LoginPage.visit().goToCadastro();
+        LoginPage.visit().goToSignup();
         cy.url().should('include', '/cadastrarusuarios');
-        CadastroPage.cadastrarUsuario(user);
+        SignupPage.registerUser(user);
 
         cy.wait('@newUser').then((interception) => {
             expect(interception.response.statusCode).to.equal(201);

@@ -1,14 +1,14 @@
 import LoginPage from './pages/LoginPage';
-import CadastroPage from './pages/CadastroPage';
+import SignupPage from './pages/SignupPage';
 import { makeUser } from './factories/userFactory';
-import * as usuariosService from './services/usuariosService';
+import * as userService from './services/userService';
 
 Cypress.Commands.add('login', (email, password) => {
     LoginPage.login(email, password);
 });
 
 Cypress.Commands.add('apiCreateUser', (user) => {
-    return usuariosService.create(user);
+    return userService.create(user);
 });
 
 Cypress.Commands.add('signValidate', (user) => {
@@ -18,9 +18,9 @@ Cypress.Commands.add('signValidate', (user) => {
 
     cy.intercept('POST', '**/usuarios').as('newUser');
 
-    LoginPage.visit().goToCadastro();
+    LoginPage.visit().goToSignup();
     cy.url().should('include', '/cadastrarusuarios');
-    CadastroPage.cadastrarUsuario(targetUser);
+    SignupPage.registerUser(targetUser);
 
     cy.wait('@newUser').then((interception) => {
         expect(interception.response.statusCode).to.equal(400);

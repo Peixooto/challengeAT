@@ -1,9 +1,9 @@
 class ShoppingListPage {
-  titulo() {
+  pageTitle() {
     return cy.get('h1');
   }
 
-  adicionarAoCarrinho() {
+  addToCart() {
     cy.get('[data-testid="adicionar carrinho"]').click();
     return this;
   }
