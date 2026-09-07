@@ -9,7 +9,14 @@ export function create(cart, authorization) {
   });
 }
 
-export function concluirCompra(authorization) {
+export function getById(id) {
+  return apiRequest({
+    method: 'GET',
+    url: `/carrinhos/${id}`,
+  });
+}
+
+export function completePurchase(authorization) {
   return apiRequest({
     method: 'DELETE',
     url: '/carrinhos/concluir-compra',
@@ -17,7 +24,7 @@ export function concluirCompra(authorization) {
   });
 }
 
-export function cancelarCompra(authorization) {
+export function cancelPurchase(authorization) {
   return apiRequest({
     method: 'DELETE',
     url: '/carrinhos/cancelar-compra',

@@ -8,6 +8,14 @@ export function create(user) {
   });
 }
 
+export function update(id, user) {
+  return apiRequest({
+    method: 'PUT',
+    url: `/usuarios/${id}`,
+    body: user,
+  });
+}
+
 export function getById(id) {
   return apiRequest({
     method: 'GET',
