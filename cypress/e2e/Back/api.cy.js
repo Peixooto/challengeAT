@@ -11,16 +11,21 @@ describe('API - Login', () => {
 
     userService.create(user).its('status').should('eq', 201);
 
-    loginService.login({ email: user.email, password: user.password }).then((response) => {
-      expect(response.status).to.eq(200);
-      expect(response.body.message).to.eq('Login realizado com sucesso');
-      expect(response.body.authorization).to.match(/^Bearer\s.+/);
-    });
+    loginService
+      .login({ email: user.email, password: user.password })
+      .then((response) => {
+        expect(response.status).to.eq(200);
+        expect(response.body.message).to.eq('Login realizado com sucesso');
+        expect(response.body.authorization).to.match(/^Bearer\s.+/);
+      });
   });
 
   it('should reject invalid credentials with 401', () => {
     loginService
-      .login({ email: 'usuario.inexistente@teste.com', password: 'senhaErrada' })
+      .login({
+        email: 'usuario.inexistente@teste.com',
+        password: 'senhaErrada',
+      })
       .then((response) => {
         expect(response.status).to.eq(401);
         expect(response.body.message).to.eq('Email e/ou senha inválidos');
@@ -79,15 +84,19 @@ describe('API - Users', () => {
     const updatedUser = makeUser();
 
     userService.create(user).then((createResponse) => {
-      userService.update(createResponse.body._id, updatedUser).then((updateResponse) => {
-        expect(updateResponse.status).to.eq(200);
-        expect(updateResponse.body.message).to.eq('Registro alterado com sucesso');
+      userService
+        .update(createResponse.body._id, updatedUser)
+        .then((updateResponse) => {
+          expect(updateResponse.status).to.eq(200);
+          expect(updateResponse.body.message).to.eq(
+            'Registro alterado com sucesso'
+          );
 
-        userService.getById(createResponse.body._id).then((getResponse) => {
-          expect(getResponse.body.nome).to.eq(updatedUser.nome);
-          expect(getResponse.body.email).to.eq(updatedUser.email);
+          userService.getById(createResponse.body._id).then((getResponse) => {
+            expect(getResponse.body.nome).to.eq(updatedUser.nome);
+            expect(getResponse.body.email).to.eq(updatedUser.email);
+          });
         });
-      });
     });
   });
 
@@ -99,7 +108,9 @@ describe('API - Users', () => {
 
       userService.remove(userId).then((removeResponse) => {
         expect(removeResponse.status).to.eq(200);
-        expect(removeResponse.body.message).to.eq('Registro excluído com sucesso');
+        expect(removeResponse.body.message).to.eq(
+          'Registro excluído com sucesso'
+        );
       });
 
       userService.getById(userId).then((getResponse) => {
@@ -124,88 +135,120 @@ describe('API - Products', () => {
     const user = makeUser();
     userService.create(user).its('status').should('eq', 201);
 
-    loginService.login({ email: user.email, password: user.password }).then((loginResponse) => {
-      productService.create(makeProduct(), loginResponse.body.authorization).then((response) => {
-        expect(response.status).to.eq(403);
-        expect(response.body.message).to.eq('Rota exclusiva para administradores');
+    loginService
+      .login({ email: user.email, password: user.password })
+      .then((loginResponse) => {
+        productService
+          .create(makeProduct(), loginResponse.body.authorization)
+          .then((response) => {
+            expect(response.status).to.eq(403);
+            expect(response.body.message).to.eq(
+              'Rota exclusiva para administradores'
+            );
+          });
       });
-    });
   });
 
   it('should allow an administrator to register a product, which then exists', () => {
     const admin = makeAdminUser();
     userService.create(admin).its('status').should('eq', 201);
 
-    loginService.login({ email: admin.email, password: admin.password }).then((loginResponse) => {
-      const product = makeProduct();
+    loginService
+      .login({ email: admin.email, password: admin.password })
+      .then((loginResponse) => {
+        const product = makeProduct();
 
-      productService.create(product, loginResponse.body.authorization).then((createResponse) => {
-        expect(createResponse.status).to.eq(201);
-        expect(createResponse.body.message).to.eq('Cadastro realizado com sucesso');
+        productService
+          .create(product, loginResponse.body.authorization)
+          .then((createResponse) => {
+            expect(createResponse.status).to.eq(201);
+            expect(createResponse.body.message).to.eq(
+              'Cadastro realizado com sucesso'
+            );
 
-        productService.getById(createResponse.body._id).then((getResponse) => {
-          expect(getResponse.status).to.eq(200);
-          expect(getResponse.body.nome).to.eq(product.nome);
-          expect(getResponse.body.preco).to.eq(product.preco);
-        });
+            productService
+              .getById(createResponse.body._id)
+              .then((getResponse) => {
+                expect(getResponse.status).to.eq(200);
+                expect(getResponse.body.nome).to.eq(product.nome);
+                expect(getResponse.body.preco).to.eq(product.preco);
+              });
+          });
       });
-    });
   });
 
   it('should allow an administrator to update a product', () => {
     const admin = makeAdminUser();
     userService.create(admin).its('status').should('eq', 201);
 
-    loginService.login({ email: admin.email, password: admin.password }).then((loginResponse) => {
-      const authorization = loginResponse.body.authorization;
-
-      productService.create(makeProduct(), authorization).then((createResponse) => {
-        const updatedProduct = makeProduct();
+    loginService
+      .login({ email: admin.email, password: admin.password })
+      .then((loginResponse) => {
+        const authorization = loginResponse.body.authorization;
 
         productService
-          .update(createResponse.body._id, updatedProduct, authorization)
-          .then((updateResponse) => {
-            expect(updateResponse.status).to.eq(200);
-            expect(updateResponse.body.message).to.eq('Registro alterado com sucesso');
+          .create(makeProduct(), authorization)
+          .then((createResponse) => {
+            const updatedProduct = makeProduct();
 
-            productService.getById(createResponse.body._id).then((getResponse) => {
-              expect(getResponse.body.nome).to.eq(updatedProduct.nome);
-              expect(getResponse.body.preco).to.eq(updatedProduct.preco);
-            });
+            productService
+              .update(createResponse.body._id, updatedProduct, authorization)
+              .then((updateResponse) => {
+                expect(updateResponse.status).to.eq(200);
+                expect(updateResponse.body.message).to.eq(
+                  'Registro alterado com sucesso'
+                );
+
+                productService
+                  .getById(createResponse.body._id)
+                  .then((getResponse) => {
+                    expect(getResponse.body.nome).to.eq(updatedProduct.nome);
+                    expect(getResponse.body.preco).to.eq(updatedProduct.preco);
+                  });
+              });
           });
       });
-    });
   });
 
   it('should allow an administrator to delete a product', () => {
     const admin = makeAdminUser();
     userService.create(admin).its('status').should('eq', 201);
 
-    loginService.login({ email: admin.email, password: admin.password }).then((loginResponse) => {
-      const authorization = loginResponse.body.authorization;
+    loginService
+      .login({ email: admin.email, password: admin.password })
+      .then((loginResponse) => {
+        const authorization = loginResponse.body.authorization;
 
-      productService.create(makeProduct(), authorization).then((createResponse) => {
-        const productId = createResponse.body._id;
+        productService
+          .create(makeProduct(), authorization)
+          .then((createResponse) => {
+            const productId = createResponse.body._id;
 
-        productService.remove(productId, authorization).then((removeResponse) => {
-          expect(removeResponse.status).to.eq(200);
-          expect(removeResponse.body.message).to.eq('Registro excluído com sucesso');
-        });
+            productService
+              .remove(productId, authorization)
+              .then((removeResponse) => {
+                expect(removeResponse.status).to.eq(200);
+                expect(removeResponse.body.message).to.eq(
+                  'Registro excluído com sucesso'
+                );
+              });
 
-        productService.getById(productId).then((getResponse) => {
-          expect(getResponse.status).to.eq(400);
-          expect(getResponse.body.message).to.eq('Produto não encontrado');
-        });
+            productService.getById(productId).then((getResponse) => {
+              expect(getResponse.status).to.eq(400);
+              expect(getResponse.body.message).to.eq('Produto não encontrado');
+            });
+          });
       });
-    });
   });
 
   it('should show no results when searching for a non-existent product', () => {
-    productService.getByName(`produto-que-nao-existe-${Date.now()}`).then((response) => {
-      expect(response.status).to.eq(200);
-      expect(response.body.quantidade).to.eq(0);
-      expect(response.body.produtos).to.deep.eq([]);
-    });
+    productService
+      .getByName(`produto-que-nao-existe-${Date.now()}`)
+      .then((response) => {
+        expect(response.status).to.eq(200);
+        expect(response.body.quantidade).to.eq(0);
+        expect(response.body.produtos).to.deep.eq([]);
+      });
   });
 });
 
@@ -217,25 +260,40 @@ describe('API - Shopping cart', () => {
     const buyer = makeUser();
     userService.create(buyer).its('status').should('eq', 201);
 
-    loginService.login({ email: admin.email, password: admin.password }).then((adminLogin) => {
-      productService.create(makeProduct({ quantidade: 5 }), adminLogin.body.authorization).then((product) => {
-        loginService.login({ email: buyer.email, password: buyer.password }).then((buyerLogin) => {
-          const authorization = buyerLogin.body.authorization;
+    loginService
+      .login({ email: admin.email, password: admin.password })
+      .then((adminLogin) => {
+        productService
+          .create(makeProduct({ quantidade: 5 }), adminLogin.body.authorization)
+          .then((product) => {
+            loginService
+              .login({ email: buyer.email, password: buyer.password })
+              .then((buyerLogin) => {
+                const authorization = buyerLogin.body.authorization;
 
-          cartService
-            .create({ produtos: [{ idProduto: product.body._id, quantidade: 2 }] }, authorization)
-            .then((cartResponse) => {
-              expect(cartResponse.status).to.eq(201);
+                cartService
+                  .create(
+                    {
+                      produtos: [
+                        { idProduto: product.body._id, quantidade: 2 },
+                      ],
+                    },
+                    authorization
+                  )
+                  .then((cartResponse) => {
+                    expect(cartResponse.status).to.eq(201);
 
-              productService.getById(product.body._id).then((getResponse) => {
-                expect(getResponse.body.quantidade).to.eq(3);
+                    productService
+                      .getById(product.body._id)
+                      .then((getResponse) => {
+                        expect(getResponse.body.quantidade).to.eq(3);
+                      });
+
+                    cartService.cancelPurchase(authorization);
+                  });
               });
-
-              cartService.cancelPurchase(authorization);
-            });
-        });
+          });
       });
-    });
   });
 
   it('should not allow a user to have more than one active cart', () => {
@@ -245,23 +303,36 @@ describe('API - Shopping cart', () => {
     const buyer = makeUser();
     userService.create(buyer).its('status').should('eq', 201);
 
-    loginService.login({ email: admin.email, password: admin.password }).then((adminLogin) => {
-      productService.create(makeProduct({ quantidade: 5 }), adminLogin.body.authorization).then((product) => {
-        loginService.login({ email: buyer.email, password: buyer.password }).then((buyerLogin) => {
-          const authorization = buyerLogin.body.authorization;
-          const cart = { produtos: [{ idProduto: product.body._id, quantidade: 1 }] };
+    loginService
+      .login({ email: admin.email, password: admin.password })
+      .then((adminLogin) => {
+        productService
+          .create(makeProduct({ quantidade: 5 }), adminLogin.body.authorization)
+          .then((product) => {
+            loginService
+              .login({ email: buyer.email, password: buyer.password })
+              .then((buyerLogin) => {
+                const authorization = buyerLogin.body.authorization;
+                const cart = {
+                  produtos: [{ idProduto: product.body._id, quantidade: 1 }],
+                };
 
-          cartService.create(cart, authorization).its('status').should('eq', 201);
+                cartService
+                  .create(cart, authorization)
+                  .its('status')
+                  .should('eq', 201);
 
-          cartService.create(cart, authorization).then((response) => {
-            expect(response.status).to.eq(400);
-            expect(response.body.message).to.eq('Não é permitido ter mais de 1 carrinho');
+                cartService.create(cart, authorization).then((response) => {
+                  expect(response.status).to.eq(400);
+                  expect(response.body.message).to.eq(
+                    'Não é permitido ter mais de 1 carrinho'
+                  );
+                });
+
+                cartService.cancelPurchase(authorization);
+              });
           });
-
-          cartService.cancelPurchase(authorization);
-        });
       });
-    });
   });
 
   it('should complete a purchase, keeping the stock decreased', () => {
@@ -271,27 +342,42 @@ describe('API - Shopping cart', () => {
     const buyer = makeUser();
     userService.create(buyer).its('status').should('eq', 201);
 
-    loginService.login({ email: admin.email, password: admin.password }).then((adminLogin) => {
-      productService.create(makeProduct({ quantidade: 5 }), adminLogin.body.authorization).then((product) => {
-        loginService.login({ email: buyer.email, password: buyer.password }).then((buyerLogin) => {
-          const authorization = buyerLogin.body.authorization;
+    loginService
+      .login({ email: admin.email, password: admin.password })
+      .then((adminLogin) => {
+        productService
+          .create(makeProduct({ quantidade: 5 }), adminLogin.body.authorization)
+          .then((product) => {
+            loginService
+              .login({ email: buyer.email, password: buyer.password })
+              .then((buyerLogin) => {
+                const authorization = buyerLogin.body.authorization;
 
-          cartService
-            .create({ produtos: [{ idProduto: product.body._id, quantidade: 2 }] }, authorization)
-            .its('status')
-            .should('eq', 201);
+                cartService
+                  .create(
+                    {
+                      produtos: [
+                        { idProduto: product.body._id, quantidade: 2 },
+                      ],
+                    },
+                    authorization
+                  )
+                  .its('status')
+                  .should('eq', 201);
 
-          cartService.completePurchase(authorization).then((response) => {
-            expect(response.status).to.eq(200);
-            expect(response.body.message).to.eq('Registro excluído com sucesso');
+                cartService.completePurchase(authorization).then((response) => {
+                  expect(response.status).to.eq(200);
+                  expect(response.body.message).to.eq(
+                    'Registro excluído com sucesso'
+                  );
+                });
+
+                productService.getById(product.body._id).then((getResponse) => {
+                  expect(getResponse.body.quantidade).to.eq(3);
+                });
+              });
           });
-
-          productService.getById(product.body._id).then((getResponse) => {
-            expect(getResponse.body.quantidade).to.eq(3);
-          });
-        });
       });
-    });
   });
 
   it('should cancel a purchase, restoring the stock', () => {
@@ -301,26 +387,41 @@ describe('API - Shopping cart', () => {
     const buyer = makeUser();
     userService.create(buyer).its('status').should('eq', 201);
 
-    loginService.login({ email: admin.email, password: admin.password }).then((adminLogin) => {
-      productService.create(makeProduct({ quantidade: 5 }), adminLogin.body.authorization).then((product) => {
-        loginService.login({ email: buyer.email, password: buyer.password }).then((buyerLogin) => {
-          const authorization = buyerLogin.body.authorization;
+    loginService
+      .login({ email: admin.email, password: admin.password })
+      .then((adminLogin) => {
+        productService
+          .create(makeProduct({ quantidade: 5 }), adminLogin.body.authorization)
+          .then((product) => {
+            loginService
+              .login({ email: buyer.email, password: buyer.password })
+              .then((buyerLogin) => {
+                const authorization = buyerLogin.body.authorization;
 
-          cartService
-            .create({ produtos: [{ idProduto: product.body._id, quantidade: 2 }] }, authorization)
-            .its('status')
-            .should('eq', 201);
+                cartService
+                  .create(
+                    {
+                      produtos: [
+                        { idProduto: product.body._id, quantidade: 2 },
+                      ],
+                    },
+                    authorization
+                  )
+                  .its('status')
+                  .should('eq', 201);
 
-          cartService.cancelPurchase(authorization).then((response) => {
-            expect(response.status).to.eq(200);
-            expect(response.body.message).to.eq('Registro excluído com sucesso. Estoque dos produtos reabastecido');
+                cartService.cancelPurchase(authorization).then((response) => {
+                  expect(response.status).to.eq(200);
+                  expect(response.body.message).to.eq(
+                    'Registro excluído com sucesso. Estoque dos produtos reabastecido'
+                  );
+                });
+
+                productService.getById(product.body._id).then((getResponse) => {
+                  expect(getResponse.body.quantidade).to.eq(5);
+                });
+              });
           });
-
-          productService.getById(product.body._id).then((getResponse) => {
-            expect(getResponse.body.quantidade).to.eq(5);
-          });
-        });
       });
-    });
   });
 });

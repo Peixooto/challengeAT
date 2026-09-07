@@ -7,7 +7,10 @@ class LoginPage {
   login(email, password) {
     this.visit();
     cy.get('[data-testid="email"]').should('exist').clear().type(email);
-    cy.get('[data-testid="senha"]').should('exist').clear().type(`${password}{enter}`);
+    cy.get('[data-testid="senha"]')
+      .should('exist')
+      .clear()
+      .type(`${password}{enter}`);
     return this;
   }
 

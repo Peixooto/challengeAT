@@ -14,31 +14,43 @@ describe('Shopping cart', () => {
     const admin = makeAdminUser();
     userService.create(admin).its('status').should('eq', 201);
 
-    loginService.login({ email: admin.email, password: admin.password }).then((loginResponse) => {
-      product = makeProduct();
-      productService.create(product, loginResponse.body.authorization).its('status').should('eq', 201);
-    });
+    loginService
+      .login({ email: admin.email, password: admin.password })
+      .then((loginResponse) => {
+        product = makeProduct();
+        productService
+          .create(product, loginResponse.body.authorization)
+          .its('status')
+          .should('eq', 201);
+      });
 
     shopper = makeUser();
     userService.create(shopper).its('status').should('eq', 201);
   });
 
   beforeEach(() => {
-    cy.session(shopper.email, () => {
-      cy.login(shopper.email, shopper.password);
-      cy.url().should('include', '/home');
-    }, {
-      validate() {
-        expect(window.localStorage.getItem('serverest/userToken')).to.exist;
+    cy.session(
+      shopper.email,
+      () => {
+        cy.login(shopper.email, shopper.password);
+        cy.url().should('include', '/home');
       },
-      cacheAcrossSpecs: true
-    });
+      {
+        validate() {
+          expect(window.localStorage.getItem('serverest/userToken')).to.exist;
+        },
+        cacheAcrossSpecs: true,
+      }
+    );
 
     HomePage.visit();
   });
 
   it('should allow you to add the product to the list and to the cart', () => {
-    cy.intercept('GET', `**/produtos?nome=${encodeURIComponent(product.nome)}`).as('getProdutos');
+    cy.intercept(
+      'GET',
+      `**/produtos?nome=${encodeURIComponent(product.nome)}`
+    ).as('getProdutos');
 
     HomePage.searchProduct(product.nome);
 

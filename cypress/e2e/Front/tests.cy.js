@@ -2,7 +2,6 @@ import { makeUser } from '../../support/factories/userFactory';
 import HomePage from '../../support/pages/HomePage';
 
 describe('Test cases', () => {
-
   // A fixed account like "ana@banana.com" isn't guaranteed to exist on the
   // shared ServeRest demo server (it may never have been created, or may
   // have been created with a different password by someone else running
@@ -17,26 +16,25 @@ describe('Test cases', () => {
   });
 
   beforeEach(() => {
-    cy.session(user.email, () => {
-      cy.login(user.email, user.password);
-      cy.url().should('include', '/home');
-    }, {
-      validate() {
-        expect(window.localStorage.getItem('serverest/userToken')).to.exist;
+    cy.session(
+      user.email,
+      () => {
+        cy.login(user.email, user.password);
+        cy.url().should('include', '/home');
       },
-      cacheAcrossSpecs: true
-    });
+      {
+        validate() {
+          expect(window.localStorage.getItem('serverest/userToken')).to.exist;
+        },
+        cacheAcrossSpecs: true,
+      }
+    );
 
     HomePage.visit();
   });
 
   it('Should check items displayed after login', () => {
-    const navbarItems = [
-      'Home',
-      'Lista de Compras',
-      'Carrinho',
-      'Logout'
-    ];
+    const navbarItems = ['Home', 'Lista de Compras', 'Carrinho', 'Logout'];
 
     HomePage.navbar().should('be.visible');
     navbarItems.forEach((text) => {
@@ -44,7 +42,11 @@ describe('Test cases', () => {
     });
 
     HomePage.pageTitle().should('have.text', 'Serverest Store');
-    HomePage.searchInput().should('have.attr', 'placeholder', 'Pesquisar Produtos');
+    HomePage.searchInput().should(
+      'have.attr',
+      'placeholder',
+      'Pesquisar Produtos'
+    );
     cy.get('h4').should('have.text', 'Produtos');
 
     HomePage.searchButton().should('be.visible');

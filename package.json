@@ -7,7 +7,9 @@
     "test": "cypress run",
     "cypress:open": "cypress open",
     "cypress:run": "cypress run",
-    "cypress:run:chrome": "cypress run --browser chrome"
+    "cypress:run:chrome": "cypress run --browser chrome",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
   },
   "repository": {
     "type": "git",
